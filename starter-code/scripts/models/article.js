@@ -48,7 +48,7 @@ Article.fetchAll = function() {
     2. Then we can render the index page. */
     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
     // TODO: Now let's render the index page.
-    var storedData = JSON.parse(localStorage.hackerIpsum);
+    var storedData = JSON.parse(localStorage.getItem('hackerIpsum'));
     Article.loadAll(storedData);
     articleView.renderIndexPage();
   } else {
@@ -61,17 +61,15 @@ Article.fetchAll = function() {
      3. And then render the index page. */
     $.ajax({
       type: 'GET',
-      url: 'http://127.0.0.1:8080/data/hackerIpsum.json',
-      success: function(data) {
-        localStorage.hackerIpsum = data;
-        var returnedData = JSON.parse(data);
-        Article.loadAll(returnedData);
-        articleView.renderIndexPage();
-      },
-      error: function(error) {
-        console.log('ERROR', error);
-      }
+      url: '/data/hackerIpsum.json',
+      success: successHandler
     });
+    function successHandler(data) {
+      localStorage.setItem('hackerIpsum',JSON.stringify(data));
+      // var returnedData = JSON.parse(data);
+      Article.loadAll(data);
+      articleView.renderIndexPage();
+    }
   }
 };
 
