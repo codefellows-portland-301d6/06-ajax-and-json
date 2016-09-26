@@ -49,7 +49,7 @@ Article.fetchAll = function() {
     2. Then we can render the index page. */
     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
     // TODO: Now let's render the index page.
-    text = localStorage.getItem('articleJSON');
+    text = localStorage.getItem('hackerIpsum');
     text = JSON.parse(text);
     Article.loadAll(text);
     articleView.renderIndexPage();
