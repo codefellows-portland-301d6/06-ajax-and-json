@@ -41,23 +41,37 @@ Article.loadAll = function(dataWePassIn) {
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View: */
 
-Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
-    /* When our data is already in localStorage:
-    1. We can process it (sort and instantiate),
-    2. Then we can render the index page. */
-    // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
-    // TODO: Now let's render the index page.
-  } else {
-    /* TODO: Otherwise, without our localStorage data, we need to:
-    - Retrive our JSON file asynchronously
-     (which jQuery method method is best for this?).
-     Within this method, we should:
-     1. Load our json data,
-     2. Store that data in localStorage so we can skip the server call next time.
-     3. And then render the index page. */
-  }
-};
+// Article.fetchAll = function() {
+//   var text = '';
+//   if (localStorage.hackerIpsum) {
+//     /* When our data is already in localStorage:
+//     1. We can process it (sort and instantiate),
+//     2. Then we can render the index page. */
+//     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
+//     // TODO: Now let's render the index page.
+//     text = localStorage.getItem('hackerIpsum');
+//     text = JSON.parse(text);
+//     Article.loadAll(text);
+//     articleView.renderIndexPage();
+//   } else {
+//     /* TODO: Otherwise, without our localStorage data, we need to:
+//     - Retrive our JSON file asynchronously
+//      (which jQuery method method is best for this?).
+//      Within this method, we should:
+//      1. Load our json data,
+//      2. Store that data in localStorage so we can skip the server call next time.
+//      3. And then render the index page. */
+//     $.getJSON('/data/hackerIpsum.json').done(function(data) {
+//       text = JSON.stringify(data);
+//       localStorage.setItem('hackerIpsum', text);
+//       text = JSON.parse(text);
+//       Article.loadAll(text);
+//       articleView.renderIndexPage();
+//     }).fail( function(){
+//       $('#about').prepend("<h1>Sorry, we couldn't load the articles");
+//     });
+//   }
+// };
 
 
 
@@ -76,3 +90,57 @@ Article.fetchAll = function() {
     } else {}
   }
 */
+
+Article.fetchAll = function() {
+  var text = '';
+  var eTag = '';
+  if (localStorage.hackerIpsum) {
+    $.ajax('/data/hackerIpsum.json').done(function(response, status, jqxhr){
+      eTag = (jqxhr.getResponseHeader('ETag'));
+      var storedEtag = localStorage.getItem('ETag');
+      if (eTag === storedEtag) {
+        text = localStorage.getItem('hackerIpsum');
+        text = JSON.parse(text);
+        Article.loadAll(text);
+        articleView.renderIndexPage();
+      }
+      else {
+        $.getJSON('/data/hackerIpsum.json').done(function(data) {
+          text = JSON.stringify(data);
+          localStorage.setItem('hackerIpsum', text);
+          text = JSON.parse(text);
+          Article.loadAll(text);
+          articleView.renderIndexPage();
+        }).fail( function(){
+          $('#about').prepend("<h1>Sorry, we couldn't load the articles");
+        });
+
+      }
+    });
+
+
+
+
+
+
+
+
+  } else {
+
+    $.ajax('/data/hackerIpsum.json').done(function(response, status, jqxhr){
+      var eTag = (jqxhr.getResponseHeader('ETag'));
+      console.log(eTag);
+      localStorage.setItem('ETag', eTag);
+    });
+
+    $.getJSON('/data/hackerIpsum.json').done(function(data) {
+      text = JSON.stringify(data);
+      localStorage.setItem('hackerIpsum', text);
+      text = JSON.parse(text);
+      Article.loadAll(text);
+      articleView.renderIndexPage();
+    }).fail( function(){
+      $('#about').prepend("<h1>Sorry, we couldn't load the articles");
+    });
+  }
+};
