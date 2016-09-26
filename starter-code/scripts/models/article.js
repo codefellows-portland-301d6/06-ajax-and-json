@@ -48,9 +48,40 @@ Article.fetchAll = function() {
     2. Then we can render the index page. */
     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
     // TODO: Now let's render the index page.
-    var storedData = JSON.parse(localStorage.getItem('hackerIpsum'));
-    Article.loadAll(storedData);
-    articleView.renderIndexPage();
+    $.ajax({
+      type: 'HEAD',
+      url: '/data/hackerIpsum.json',
+      complete: function (result) {
+        var eTag = result.getResponseHeader('ETag');
+        console.log(eTag + localStorage.getItem('eTag'));
+        if (eTag === localStorage.getItem('eTag')) {
+          var storedData = JSON.parse(localStorage.getItem('hackerIpsum'));
+          Article.loadAll(storedData);
+          articleView.renderIndexPage();
+        } else {
+          $.ajax({
+            type: 'GET',
+            url: '/data/hackerIpsum.json',
+            success: successHandler
+          });
+          $.ajax({
+            type: 'HEAD',
+            url: '/data/hackerIpsum.json',
+            complete: function (result) {
+              var eTag = result.getResponseHeader('ETag');
+              localStorage.setItem('eTag', eTag);
+            }
+          });
+          function successHandler(data) {
+            localStorage.setItem('hackerIpsum',JSON.stringify(data));
+            // var returnedData = JSON.parse(data);
+            Article.loadAll(data);
+            articleView.renderIndexPage();
+          }
+        }
+      }
+    });
+
   } else {
     /* TODO: Otherwise, without our localStorage data, we need to:
     - Retrive our JSON file asynchronously
@@ -64,6 +95,14 @@ Article.fetchAll = function() {
       url: '/data/hackerIpsum.json',
       success: successHandler
     });
+    $.ajax({
+      type: 'HEAD',
+      url: '/data/hackerIpsum.json',
+      complete: function (result) {
+        var eTag = result.getResponseHeader('ETag');
+        localStorage.setItem('eTag', eTag);
+      }
+    });
     function successHandler(data) {
       localStorage.setItem('hackerIpsum',JSON.stringify(data));
       // var returnedData = JSON.parse(data);
@@ -72,8 +111,6 @@ Article.fetchAll = function() {
     }
   }
 };
-
-
 
 
 
