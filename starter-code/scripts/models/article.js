@@ -42,12 +42,24 @@ Article.loadAll = function(dataWePassIn) {
  source, process it, then hand off control to the View: */
 
 Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
+  if (localStorage.hackerIpsum){
+    // $.ajax('data/hackerIpsum.json', {
+    //   method: 'GET',
+    //   ifModified: true,
+    //   success: successHandler,
+    //   error: errorHandler
+    // });
+    // we attempted to use the ifModified attribute to check if the ETag had changed and then render accordingly.
+    //It didn't work but seems promising.
     /* When our data is already in localStorage:
     1. We can process it (sort and instantiate),
     2. Then we can render the index page. */
     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
     // TODO: Now let's render the index page.
+    var retrievedData = localStorage.getItem('hackerIpsum');
+    var parsedData = JSON.parse(retrievedData);
+    Article.loadAll(parsedData);
+    articleView.renderIndexPage();
   } else {
     /* TODO: Otherwise, without our localStorage data, we need to:
     - Retrive our JSON file asynchronously
@@ -56,6 +68,20 @@ Article.fetchAll = function() {
      1. Load our json data,
      2. Store that data in localStorage so we can skip the server call next time.
      3. And then render the index page. */
+    $.ajax('data/hackerIpsum.json', {
+      method: 'GET',
+      success: successHandler,
+      error: errorHandler
+    });
+    function successHandler(data) {
+      var jsonData = JSON.stringify(data);
+      localStorage.setItem('hackerIpsum', jsonData);
+      Article.loadAll(data);
+      articleView.renderIndexPage();
+    };
+    function errorHandler(error) {
+      console.log('error', error);
+    };
   }
 };
 
