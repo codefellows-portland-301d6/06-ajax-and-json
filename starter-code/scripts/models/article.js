@@ -51,6 +51,7 @@ Article.fetchAll = function() {
       // TODO: Now let's render the index page.
 
     var storedData = JSON.parse(localStorage.getItem('hackerIpsum'));
+    console.log('Huzzah', storedData);
     Article.loadAll(storedData);
   } else {
 
@@ -61,7 +62,7 @@ Article.fetchAll = function() {
        1. Load our json data,
        2. Store that data in localStorage so we can skip the server call next time.
        3. And then render the index page. */
-       console.log('callingAjax');
+    console.log('callingAjax');
     $.ajax('/data/hackerIpsum.json', {
       method: 'GET',
       success: successHandler,
@@ -70,7 +71,9 @@ Article.fetchAll = function() {
   }
 };
 function successHandler(data) {
-  console.log('SUCCESS', data);
+  localStorage.setItem('hackerIpsum', JSON.stringify(data));
+  Article.loadAll(data);
+  console.log('Data:', data);
 }
 function errorHandler(error) {
   console.log('ERROR', error);
