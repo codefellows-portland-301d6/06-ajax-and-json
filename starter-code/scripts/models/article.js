@@ -42,7 +42,15 @@ Article.loadAll = function(dataWePassIn) {
  source, process it, then hand off control to the View: */
 
 Article.fetchAll = function() {
-  if (localStorage.hackerIpsum) {
+  if (localStorage.hackerIpsum){
+    // $.ajax('data/hackerIpsum.json', {
+    //   method: 'GET',
+    //   ifModified: true,
+    //   success: successHandler,
+    //   error: errorHandler
+    // });
+    // we attempted to use the ifModified attribute to check if the ETag had changed and then render accordingly.
+    //It didn't work but seems promising.
     /* When our data is already in localStorage:
     1. We can process it (sort and instantiate),
     2. Then we can render the index page. */
@@ -66,9 +74,7 @@ Article.fetchAll = function() {
       error: errorHandler
     });
     function successHandler(data) {
-      console.log('Success', data);
       var jsonData = JSON.stringify(data);
-      console.log(typeof jsonData);
       localStorage.setItem('hackerIpsum', jsonData);
       Article.loadAll(data);
       articleView.renderIndexPage();
