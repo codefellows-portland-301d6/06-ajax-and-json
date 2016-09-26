@@ -43,6 +43,9 @@ Article.loadAll = function(dataWePassIn) {
 
 Article.fetchAll = function() {
   if (localStorage.hackerIpsum) {
+    var parsedStorage = JSON.parse(localStorage.hackerIpsum);
+    Article.loadAll(parsedStorage);
+    articleView.renderIndexPage();
     /* When our data is already in localStorage:
     1. We can process it (sort and instantiate),
     2. Then we can render the index page. */
@@ -58,6 +61,7 @@ Article.fetchAll = function() {
      3. And then render the index page. */
   }
 };
+
 
 
 
