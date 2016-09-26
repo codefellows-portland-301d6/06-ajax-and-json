@@ -67,6 +67,9 @@ Article.fetchAll = function() {
         var returnedData = JSON.parse(data);
         Article.loadAll(returnedData);
         articleView.renderIndexPage();
+      },
+      error: function(error) {
+        console.log('ERROR', error);
       }
     });
   }
