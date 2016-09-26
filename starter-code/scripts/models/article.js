@@ -41,38 +41,74 @@ Article.loadAll = function(dataWePassIn) {
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View: */
 
+// Article.fetchAll = function() {
+//   if (localStorage.hackerIpsum) {
+//     var parsedStorage = JSON.parse(localStorage.hackerIpsum);
+//     Article.loadAll(parsedStorage);
+//     articleView.renderIndexPage();
+//     /* When our data is already in localStorage:
+//     1. We can process it (sort and instantiate),
+//     2. Then we can render the index page. */
+//     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
+//     // TODO: Now let's render the index page.
+//   } else {
+//     /* TODO: Otherwise, without our localStorage data, we need to:
+//     - Retrive our JSON file asynchronously
+//      (which jQuery method method is best for this?).
+//      Within this method, we should:
+//      1. Load our json data,
+//      2. Store that data in localStorage so we can skip the server call next time.
+//      3. And then render the index page. */
+//     $.ajax ({
+//       type: 'GET',
+//       url: '/data/hackeripsum.json',
+//       success: function(data) {
+//         localStorage.setItem('hackerIpsum', JSON.stringify(data));
+//         Article.loadAll(data);
+//         articleView.renderIndexPage();
+//       },
+//       error: function() {
+//         console.log('There was an error!');
+//       }
+//     });
+//   }
+// };
+
+// Great work so far! STRETCH GOAL TIME!? Refactor your fetchAll above, or get some additional typing practice here. Our main goal in this part of the lab will be saving the eTag located in Headers, to see if it's been updated!
+
 Article.fetchAll = function() {
   if (localStorage.hackerIpsum) {
-    /* When our data is already in localStorage:
-    1. We can process it (sort and instantiate),
-    2. Then we can render the index page. */
-    // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
-    // TODO: Now let's render the index page.
+    // Let's make a request to get the eTag (hint: you may need to use a different jQuery method for this more explicit request).
+    $.ajax({
+      type: 'HEAD',
+      url: '/data/hackeripsum.json',
+      success: function(data) {
+        $.ajax({
+          type: 'GET',
+          url: '/data/hackeripsum.json',
+          success: function(data) {
+            localStorage.setItem('hackerIpsum', JSON.stringify(data));
+            Article.loadAll(data);
+            articleView.renderIndexPage();
+          }
+        });
+      },
+      ifModified: true,
+      error: function() {
+        var parsedStorage = JSON.parse(localStorage.hackerIpsum);
+        Article.loadAll(parsedStorage);
+        articleView.renderIndexPage();
+      }
+    });
   } else {
-    /* TODO: Otherwise, without our localStorage data, we need to:
-    - Retrive our JSON file asynchronously
-     (which jQuery method method is best for this?).
-     Within this method, we should:
-     1. Load our json data,
-     2. Store that data in localStorage so we can skip the server call next time.
-     3. And then render the index page. */
+    $.ajax({
+      type: 'GET',
+      url: '/data/hackeripsum.json',
+      success: function(data) {
+        localStorage.setItem('hackerIpsum', JSON.stringify(data));
+        Article.loadAll(data);
+        articleView.renderIndexPage();
+      }
+    });
   }
 };
-
-
-
-
-
-
-
-/* Great work so far! STRETCH GOAL TIME!? Refactor your fetchAll above, or
-   get some additional typing practice here. Our main goal in this part of the
-   lab will be saving the eTag located in Headers, to see if it's been updated!
-
-  Article.fetchAll = function() {
-    if (localStorage.hackerIpsum) {
-      // Let's make a request to get the eTag (hint: you may need to use a different
-      // jQuery method for this more explicit request).
-    } else {}
-  }
-*/

@@ -1,5 +1,13 @@
 [
   {
+    "title": "Kitty-Cat",
+    "category": "feline",
+    "author": "Meow Mix",
+    "authorUrl": "http://http.cat",
+    "publishedOn": "2016-09-26",
+    "body": "<p>Cats cats cats</p>"
+  },
+  {
     "title": "Transmitting Open-source Arrays",
     "category": "firewall",
     "author": "Dr. Tressie Kuphal",
