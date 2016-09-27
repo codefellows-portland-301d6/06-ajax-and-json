@@ -60,7 +60,7 @@ Article.fetchAll = function() {
     });
 
     function successHandler(data) {
-      localStorage.setItem('storage', JSON.stringify(data));
+      localStorage.setItem('hackerIpsum', JSON.stringify(data));
       Article.loadAll(data);
       articleView.renderIndexPage();
     };
