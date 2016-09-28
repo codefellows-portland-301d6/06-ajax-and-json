@@ -43,7 +43,7 @@ Article.loadAll = function(dataWePassIn) {
 
 Article.fetchAll = function() {
   if (localStorage.hackerIpsum) {
-    var getData = localStorage.getItem(hackerIpsum);
+    var getData = localStorage.getItem('hackerIpsum');
     var parsedData = JSON.parse(getData);
     Article.loadAll(parsedData);
     articleView.renderIndexPage();
