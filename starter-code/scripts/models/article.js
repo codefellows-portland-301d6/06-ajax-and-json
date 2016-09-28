@@ -43,12 +43,31 @@ Article.loadAll = function(dataWePassIn) {
 
 Article.fetchAll = function() {
   if (localStorage.hackerIpsum) {
+    var getData = localStorage.getItem('hackerIpsum');
+    var parsedData = JSON.parse(getData);
+    Article.loadAll(parsedData);
+    articleView.renderIndexPage();
     /* When our data is already in localStorage:
     1. We can process it (sort and instantiate),
     2. Then we can render the index page. */
     // Article.loadAll(// TODO: Invoke with our localStorage! Should we parse or stringify this?);
     // TODO: Now let's render the index page.
   } else {
+    $.ajax('data/hackerIpsum.json', {
+      method: 'GET',
+      success: successHandler,
+      error: errorHandler
+    });
+
+    function successHandler(data) {
+      localStorage.setItem('hackerIpsum', JSON.stringify(data));
+      Article.loadAll(data);
+      articleView.renderIndexPage();
+    };
+
+    function errorHandler(error) {
+      alert('There was error retrieving your data');
+    };
     /* TODO: Otherwise, without our localStorage data, we need to:
     - Retrive our JSON file asynchronously
      (which jQuery method method is best for this?).
